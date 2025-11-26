@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Registrar Novo Problema</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">Verifique os dados informados.</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Modelo do Carro</label>
+                        {{ form.modelo_carro }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        {{ form.titulo }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        {{ form.descricao }}
+                    </div>
+
+                    <div class="mb-3 p-2 bg-light border rounded">
+                        <label class="form-label fw-bold text-primary">Foto (Opcional)</label>
+                        <input type="file" name="imagem" class="form-control" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Registrar Problema</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3 class="mb-3 border-bottom pb-2">Acompanhamento de Serviços</h3>
+        
+        {% for problema in problemas %}
+            <div class="card mb-4 shadow-sm border-start border-4 {% if problema.status == 'ABERTO' %}border-danger{% elif problema.status == 'CONCLUIDO' %}border-success{% else %}border-warning{% endif %}">
+                
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-dark">{{ problema.modelo_carro }} <small class="text-muted fs-6">- {{ problema.titulo }}</small></h5>
+                    
+                    {% if problema.status == 'ABERTO' %}
+                        <span class="badge bg-danger">Aguardando Oficina</span>
+                    {% elif problema.status == 'ANDAMENTO' %}
+                        <span class="badge bg-warning text-dark">Oficina Interessada</span>
+                    {% else %}
+                        <span class="badge bg-success">Concluído</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-{% if problema.oficina %}7{% else %}12{% endif %}">
+                            <h6 class="text-muted">Descrição do Defeito:</h6>
+                            <p class="card-text">{{ problema.descricao }}</p>
+                            
+                            <div class="mt-3 p-2 bg-light border rounded">
+                                {% if problema.imagem %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#img{{ problema.id }}">
+                                            📸 Ver Foto
+                                        </button>
+                                        <a href="{{ problema.imagem.url }}" target="_blank" class="small text-decoration-none">Abrir em nova guia</a>
+                                    </div>
+                                    
+                                    <div class="collapse mt-2" id="img{{ problema.id }}">
+                                        <img src="{{ problema.imagem.url }}" class="img-fluid rounded border shadow-sm" style="max-height: 300px;">
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-secondary text-white">🚫 Sem foto anexada</span>
+                                    <small class="text-muted d-block mt-1">Nenhuma imagem foi enviada neste cadastro.</small>
+                                {% endif %}
+                            </div>
+                            <p class="card-text mt-3"><small class="text-muted">Criado em: {{ problema.data_criacao|date:"d/m/Y \à\s H:i" }}</small></p>
+                        </div>
+
+                        {% if problema.oficina %}
+                            <div class="col-md-5">
+                                <div class="card bg-light border-warning h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-success fw-bold">Oficina Responsável</h6>
+                                        <hr class="my-1">
+                                        <p class="mb-1 fw-bold">{{ problema.oficina.perfil_oficina.nome_oficina }}</p>
+                                        <p class="mb-2 small"><i class="bi bi-geo-alt-fill"></i> {{ problema.oficina.perfil_oficina.endereco }}</p>
+                                        
+                                        {% if problema.status == 'ANDAMENTO' %}
+                                            <div class="alert alert-warning py-1 px-2 small mb-0 mt-2 text-center">
+                                                Veículo em conserto 🔧
+                                            </div>
+                                        {% elif problema.status == 'CONCLUIDO' %}
+                                            <div class="alert alert-success py-1 px-2 small mb-0 mt-2 text-center">
+                                                Serviço Finalizado ✅
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center py-5 text-muted">
+                <h4>Você não tem nenhum chamado registrado.</h4>
+                <p>Preencha o formulário ao lado para começar.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

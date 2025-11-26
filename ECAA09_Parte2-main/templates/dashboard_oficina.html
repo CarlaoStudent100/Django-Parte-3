@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-secondary"><i class="bi bi-wrench-adjustable"></i> Painel da Oficina</h2>
+            <p class="text-muted">Gerencie os serviços disponíveis e os que estão sob sua responsabilidade.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 border-end">
+            <h4 class="text-primary mb-3">
+                🔍 Disponíveis para Pegar 
+                <span class="badge bg-primary fs-6 align-middle">{{ problemas_abertos.count }}</span>
+            </h4>
+            
+            {% for problema in problemas_abertos %}
+                <div class="card mb-3 shadow-sm border-start border-4 border-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title text-dark fw-bold">{{ problema.modelo_carro }}</h5>
+                            <small class="text-muted">{{ problema.data_criacao|date:"d/m H:i" }}</small>
+                        </div>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ problema.titulo }}</h6>
+                        
+                        <p class="card-text bg-light p-2 rounded">{{ problema.descricao }}</p>
+
+                        <div class="mb-3 p-2 border rounded">
+                            {% if problema.imagem %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#imgOpen{{ problema.id }}">
+                                        📸 Ver Foto do Cliente
+                                    </button>
+                                    <a href="{{ problema.imagem.url }}" target="_blank" class="small text-decoration-none fw-bold">Abrir foto original ↗</a>
+                                </div>
+                                <div class="collapse mt-2" id="imgOpen{{ problema.id }}">
+                                    <img src="{{ problema.imagem.url }}" class="img-fluid rounded border" style="max-height: 300px;">
+                                </div>
+                            {% else %}
+                                <span class="badge bg-secondary">🚫 Sem foto anexada</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-2">
+                            <small class="text-muted">Cliente: <strong>{{ problema.cliente.username }}</strong></small>
+                            
+                            <a href="{% url 'pegar_servico' problema.pk %}" class="btn btn-primary">
+                                Pegar Serviço 🔧
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-info text-center py-4">
+                    <h5>Sem novos chamados</h5>
+                    <p>Não há problemas em aberto no momento.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-6 bg-light py-3 rounded">
+            <h4 class="text-success mb-3">
+                🔨 Em Andamento (Meus)
+                <span class="badge bg-success fs-6 align-middle">{{ meus_servicos.count }}</span>
+            </h4>
+
+            {% for servico in meus_servicos %}
+                <div class="card mb-3 shadow border-start border-4 {% if servico.status == 'CONCLUIDO' %}border-secondary{% else %}border-warning{% endif %}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">{{ servico.modelo_carro }}</h5>
+                            
+                            {% if servico.status == 'ANDAMENTO' %}
+                                <span class="badge bg-warning text-dark">Em Conserto</span>
+                            {% else %}
+                                <span class="badge bg-success">Concluído</span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-secondary small mb-1">Problema: {{ servico.titulo }}</p>
+                        
+                        {% if servico.imagem %}
+                            <div class="alert alert-light border p-2 mb-2">
+                                <a href="{{ servico.imagem.url }}" target="_blank" class="text-decoration-none fw-bold text-primary">
+                                    📎 Ver foto do veículo (Clique aqui)
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        <div class="alert alert-warning py-1 px-2 mb-2">
+                            <small><strong>Cliente:</strong> {{ servico.cliente.username }} ({{ servico.cliente.email }})</small>
+                        </div>
+
+                        <div class="d-grid mt-3">
+                            {% if servico.status != 'CONCLUIDO' %}
+                                <a href="{% url 'concluir_servico' servico.pk %}" class="btn btn-success">
+                                    ✅ Marcar como Concluído
+                                </a>
+                            {% else %}
+                                <button class="btn btn-secondary" disabled>Serviço Finalizado</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center text-muted py-5">
+                    <p>Você não pegou nenhum serviço ainda.</p>
+                    <p class="small">Escolha um na coluna ao lado para começar.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

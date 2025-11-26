@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center mb-5">
+            <h2 class="fw-bold">Como você deseja se cadastrar?</h2>
+            <p class="text-muted">Escolha o tipo de conta que melhor se adapta às suas necessidades.</p>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 shadow-lg border-0 hover-card">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <span class="display-4">🚗</span>
+                    </div>
+                    <h3 class="card-title text-primary fw-bold mb-3">Sou Cliente</h3>
+                    <p class="card-text text-muted mb-4">Tenho um veículo com problema e procuro uma oficina mecânica de confiança.</p>
+                    
+                    <a href="{% url 'signup_cliente' %}" class="btn btn-primary btn-lg w-100 rounded-pill">
+                        Criar conta de Cliente
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 shadow-lg border-0 hover-card">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <span class="display-4">🔧</span>
+                    </div>
+                    <h3 class="card-title text-success fw-bold mb-3">Sou Oficina</h3>
+                    <p class="card-text text-muted mb-4">Sou um mecânico ou dono de oficina e quero encontrar novos serviços.</p>
+                    
+                    <a href="{% url 'signup_oficina' %}" class="btn btn-success btn-lg w-100 rounded-pill">
+                        Criar conta de Oficina
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5">
+        <p>Já possui uma conta? <a href="{% url 'login' %}" class="fw-bold text-decoration-none">Fazer Login</a></p>
+    </div>
+</div>
+
+<style>
+    /* Pequeno efeito visual ao passar o mouse nos cartões */
+    .hover-card:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+    }
+</style>
+{% endblock %}

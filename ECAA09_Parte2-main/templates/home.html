@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3 mt-5 shadow-sm">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-primary">Bem-vindo ao AutoFix</h1>
+        <p class="col-md-8 fs-4 text-muted">O sistema integrado para gestão de problemas mecânicos. Conectamos clientes a oficinas especializadas de forma rápida e eficiente.</p>
+        
+        {% if not user.is_authenticated %}
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2 px-4">Fazer Login</a>
+                
+                <a href="{% url 'signup_escolha' %}" class="btn btn-outline-secondary btn-lg px-4">Criar uma Conta</a>
+            </div>
+        {% else %}
+             <div class="mt-4">
+                <h3>Olá, {{ user.username }}!</h3>
+                <p class="lead">Bem-vindo de volta.</p>
+                
+                {% if user.is_cliente %}
+                    <a href="{% url 'dashboard_cliente' %}" class="btn btn-success btn-lg shadow">Acessar Painel do Cliente</a>
+                {% elif user.is_oficina %}
+                    <a href="{% url 'dashboard_oficina' %}" class="btn btn-primary btn-lg shadow">Acessar Painel da Oficina</a>
+                {% endif %}
+             </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row align-items-md-stretch">
+    <div class="col-md-6 mb-4">
+        <div class="h-100 p-5 text-white bg-dark rounded-3 shadow">
+            <h2>Para Oficinas 🔧</h2>
+            <p>Encontre novos serviços baseados na sua especialidade e aumente sua carteira de clientes. Gerencie seus atendimentos em um só lugar.</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'signup_oficina' %}" class="btn btn-outline-light" type="button">Cadastrar minha Oficina</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
+            <h2>Para Clientes 🚗</h2>
+            <p>Descreva o problema do seu carro, envie fotos e receba atendimento de oficinas qualificadas próximas a você. Acompanhe o status em tempo real.</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'signup_cliente' %}" class="btn btn-outline-secondary" type="button">Cadastrar meu Carro</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
